@@ -341,9 +341,37 @@ function getQuarter(date) {
  * { start: '01-01-2024', end: '15-01-2024' }, 1, 3 => ['01-01-2024', '05-01-2024', '09-01-2024', '13-01-2024']
  * { start: '01-01-2024', end: '10-01-2024' }, 1, 1 => ['01-01-2024', '03-01-2024', '05-01-2024', '07-01-2024', '09-01-2024']
  */
-function getWorkSchedule(/* period, countWorkDays, countOffDays */) {
-  throw new Error('Not implemented');
-}
+const getWorkSchedule = (period, countWorkDays, countOffDays) => {
+  const splitStart = period.start.split('-');
+  const splitEnd = period.end.split('-');
+  const startDate = new Date(
+    +splitStart[2],
+    +splitStart[1] - 1,
+    +splitStart[0]
+  );
+  const endDate = new Date(+splitEnd[2], +splitEnd[1] - 1, +splitEnd[0]);
+  const workSchedule = [];
+
+  while (startDate <= endDate) {
+    for (let i = 0; i < countWorkDays; i += 1) {
+      const workDate = new Date(startDate);
+      workSchedule.push(
+        workDate.toLocaleDateString('en-GB').split('/').join('-')
+      );
+      workDate.setDate(startDate.getDate() + 1);
+      startDate.setDate(startDate.getDate() + 1);
+      if (startDate > endDate) {
+        break;
+      }
+    }
+
+    for (let i = 0; i < countOffDays; i += 1) {
+      startDate.setDate(startDate.getDate() + 1);
+    }
+  }
+
+  return workSchedule;
+};
 
 /**
  * Determines whether the year in the provided date is a leap year.
